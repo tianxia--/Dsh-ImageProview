@@ -1,0 +1,6 @@
+# dsh bundle layer: mount this plugin. The host half is a no-op; everything
+# happens in the browser half (lib/client.js), which the client boot manifest
+# picks up from the package's "dsh.client" block.
+- insert:
+    - id: image-preview
+      name: 'dsh-image-preview'

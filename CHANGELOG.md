@@ -1,0 +1,16 @@
+# Changelog
+
+## 0.2.0
+
+- **Every image format previews now, not just the four `read_image` admits.** The host half grows two routes — `GET /image-preview/meta` and `GET /image-preview/file` — so a path in the transcript can be shown even when no attachment exists. Browser-native formats (PNG, JPEG, GIF, WebP, AVIF, BMP, ICO, SVG) are served byte-for-byte; everything else (HEIC/HEIF, TIFF, PSD, JP2, TGA, Netpbm, DDS, JXL, EXR …) is transcoded to PNG through `sips` on macOS, then ImageMagick or ffmpeg when present, with built-in zero-dependency TGA and Netpbm decoders as the last resort. Transcodes are cached under `$DSH_HOME/plugins-cache/image-preview` keyed by path+mtime+size and pruned at 240 entries.
+- **Paths in the flow become previews.** A second conversation Definition claims messages that only *name* image files — markdown `![](…)` (plain and `<angle>` form), `<path>…</path>` tool descriptors, and any path-shaped token ending in an image extension — resolves them against the conversation `cwd`, and renders whatever the host will serve. Matching is deliberately loose because the host route is the real filter: a path that does not exist, sits outside every allowed root, or does not sniff as an image renders nothing at all.
+- **Format sniffing no longer confuses TGA with ICO.** Both start `00 00 <01|02> 00` and TGA has no magic number; the tie is broken by the honest extension, then TGA's `TRUEVISION-XFILE` trailer, then per-format plausibility of the directory/header. Found by the format matrix in `test/host.test.mjs`, which now covers 13 generated fixtures.
+- **Refusals are explicit.** `bad-path`, `relative-without-cwd`, `extension-not-allowed`, `outside-allowed-roots`, `not-found`, `not-a-file`, `empty`, `too-large`, `unreadable`, `not-an-image`, `transcode-disabled`, `no-transcoder` — each with its own status code, none of them serving bytes.
+- Config: `maxBytes` (default 128 MiB), `allowRoots` (extra roots beyond every known workspace, the temp dirs and `$DSH_HOME`), `transcode: false` to serve only browser-native formats.
+- **Pixel fidelity is measured, not assumed.** A source pattern (pure R/G/B/Y bands, a diagonal, a checker) is converted to every format, fetched back through the real route over HTTP, decoded and compared to the source: MAE 0 for PNG/GIF/BMP/TIFF/PSD/TGA/Netpbm, 0.08 for EXR, 3.32 for JP2, 7.30 for JPEG, 7.55 for HEIC. Each result is also compared against vertically flipped and red/blue-swapped copies of the source, and the built-in TGA and Netpbm decoders are measured on their own path because the chain reaches `sips` first on macOS.
+- **PDF support removed.** A document's rasterization DPI is a choice rather than a property and the measured round trip came back at MAE 34; document preview belongs to a document plugin.
+- 164 offline checks: 50 host-route, 15 real-HTTP, 46 client-bundle, 53 pixel-fidelity. DDS and JXL are reported as skipped rather than claimed: this macOS build cannot write either format, so no fixture exists to measure.
+
+## 0.1.0
+
+- First cut: agent-side image **attachments** (`read_image`, including through `run_code`) render inline in the Chat flow instead of leaving a bare `<path>/tmp/shot.png</path>` line behind. One conversation Definition, one `conversation.chat.node` seat, and the official ui-attachment gallery + lightbox for the pixels.

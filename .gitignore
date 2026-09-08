@@ -1,0 +1,6 @@
+test/fixtures/
+test/served/
+node_modules/
+*.tgz
+*.log
+.DS_Store

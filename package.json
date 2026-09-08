@@ -1,0 +1,61 @@
+{
+  "name": "dsh-image-preview",
+  "version": "0.2.0",
+  "description": "Inline previews for the images an agent already produced in DeepSeek Harness: read_image attachments and local paths in any format (HEIC/TIFF/PSD/SVG/BMP/ICO/TGA/PNM/JP2 …), rendered through the official gallery and lightbox.",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "dsh-plugin",
+    "image",
+    "preview",
+    "attachment",
+    "read_image",
+    "heic",
+    "tiff",
+    "svg",
+    "lightbox"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node test/make-fixtures.mjs && node test/make-ico-fixture.mjs && node test/host.test.mjs && node test/serve.test.mjs && node test/client.test.mjs && node test/visual.test.mjs"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-chat",
+        "@deepseek-ai/dsh-client-ui-attachment"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2",
+    "react": "^18.2.0"
+  }
+}
