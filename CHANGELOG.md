@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1
+
+- **The plugin now declares the dsh packages it depends on.** It imports none of them — services arrive through cordis inject — so a static scanner cannot see them, and with no dsh peer declared, dsh's `evaluatePluginCompatibility` returned `undefined`: the plugin was never flagged or disabled on a dsh upgrade, it would just fail silently. `peerDependencies` now lists `dsh-client-ui-chat`, `dsh-client-ui-conversation`, `dsh-client-ui-attachment`, `dsh-client-ui-renderer` and `dsh-host-webserver` at `^0.1.2-alpha.2 || >=0.2.0-rc.1 <0.3.0-0`. Evaluated with dsh's own checker: compatible on 0.1.x and 0.2.x, flagged from 0.3.0-rc.1 on — so the next minor upgrade is reported instead of silently breaking.
+- **Verified on dsh 0.2.0-rc.2.** `npm run check:dsh` checks the 13 runtime contracts this plugin relies on against the installed dsh (context-node classification, the node owner's `renderMessageImages` and `cwd`, non-exclusive Definitions, gallery item shapes, the slot registry, exact web routes). All 13 hold on 0.2.0-rc.2, and the live host routes answer on a running rc.2 server.
+- `dsh.client.inject` lists `dsh-client-ui-renderer`, which hosts the slot registry on 0.2.x; `dsh-client-runtime` (its 0.1.x home) is kept for older hosts. Unknown ids are skipped by the client loader, so the list is safe on both lines.
+- A test fixture no longer carries a real package specifier as a plain string; a naive peer scanner reported it as an undeclared import.
+- Tests take React from this package's own devDependencies instead of a hard-coded dsh install path, which moved in 0.2.0-rc.2.
+
+
 ## 0.2.0
 
 - **Every image format previews now, not just the four `read_image` admits.** The host half grows two routes — `GET /image-preview/meta` and `GET /image-preview/file` — so a path in the transcript can be shown even when no attachment exists. Browser-native formats (PNG, JPEG, GIF, WebP, AVIF, BMP, ICO, SVG) are served byte-for-byte; everything else (HEIC/HEIF, TIFF, PSD, JP2, TGA, Netpbm, DDS, JXL, EXR …) is transcoded to PNG through `sips` on macOS, then ImageMagick or ffmpeg when present, with built-in zero-dependency TGA and Netpbm decoders as the last resort. Transcodes are cached under `$DSH_HOME/plugins-cache/image-preview` keyed by path+mtime+size and pruned at 240 entries.

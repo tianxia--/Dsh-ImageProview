@@ -6,11 +6,13 @@ import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
 
-const profileRequire = createRequire('/Users/pengfei.chen/.dsh/profiles/node_modules/')
-const domRequire = createRequire(profileRequire.resolve('react-dom/server'))
-const react = domRequire('react')
-const jsxRuntime = domRequire('react/jsx-runtime')
-const { renderToStaticMarkup } = profileRequire('react-dom/server')
+// React comes from this package's own devDependencies, so the suite never
+// depends on how a particular dsh release lays out its node_modules.
+const localRequire = createRequire(import.meta.url)
+const profileRequire = localRequire
+const react = localRequire('react')
+const jsxRuntime = localRequire('react/jsx-runtime')
+const { renderToStaticMarkup } = localRequire('react-dom/server')
 
 const fixtures = join(import.meta.dirname, 'fixtures')
 
@@ -87,7 +89,10 @@ const humanPaste = {
 }
 const runtimeContext = {
   type: 'user/message', seq: 10, time: 2,
-  data: { id: 'msg-2', role: 'user', source: { kind: 'plugin', plugin: '@deepseek-ai/dsh-system-prompt' },
+  // Any non-human source works here. A neutral id is used on purpose: a real
+  // package specifier in a fixture reads as an undeclared dependency to naive
+  // peer scanners (this exact string was once reported as one).
+  data: { id: 'msg-2', role: 'user', source: { kind: 'plugin', plugin: 'runtime-context-snapshot' },
     content: [{ type: 'text', text: 'Current runtime context. Workspace: /Users/pengfei.chen/Desktop/x' }] }
 }
 const assistantWithMarkdown = {

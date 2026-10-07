@@ -1,6 +1,6 @@
 {
   "name": "dsh-image-preview",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Inline previews for the images an agent already produced in DeepSeek Harness: read_image attachments and local paths in any format (HEIC/TIFF/PSD/SVG/BMP/ICO/TGA/PNM/JP2 …), rendered through the official gallery and lightbox.",
   "keywords": [
     "dsh",
@@ -34,7 +34,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "node test/make-fixtures.mjs && node test/make-ico-fixture.mjs && node test/host.test.mjs && node test/serve.test.mjs && node test/client.test.mjs && node test/visual.test.mjs"
+    "test": "node test/make-fixtures.mjs && node test/make-ico-fixture.mjs && node test/host.test.mjs && node test/serve.test.mjs && node test/client.test.mjs && node test/visual.test.mjs",
+    "check:dsh": "node test/dsh-contracts.mjs"
   },
   "license": "MIT",
   "engines": {
@@ -47,6 +48,7 @@
     "client": {
       "inject": [
         "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-renderer",
         "@deepseek-ai/dsh-client-ui-conversation",
         "@deepseek-ai/dsh-client-ui-chat",
         "@deepseek-ai/dsh-client-ui-attachment"
@@ -56,6 +58,15 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.2",
+    "@deepseek-ai/dsh-client-ui-attachment": "^0.1.2-alpha.2 || >=0.2.0-rc.1 <0.3.0-0",
+    "@deepseek-ai/dsh-client-ui-chat": "^0.1.2-alpha.2 || >=0.2.0-rc.1 <0.3.0-0",
+    "@deepseek-ai/dsh-client-ui-conversation": "^0.1.2-alpha.2 || >=0.2.0-rc.1 <0.3.0-0",
+    "@deepseek-ai/dsh-client-ui-renderer": "^0.1.2-alpha.2 || >=0.2.0-rc.1 <0.3.0-0",
+    "@deepseek-ai/dsh-host-webserver": "^0.1.2-alpha.2 || >=0.2.0-rc.1 <0.3.0-0",
     "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

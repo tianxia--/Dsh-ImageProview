@@ -104,6 +104,22 @@ Or wire it by hand:
 
 The host half mounts the routes; the browser half (`lib/client.js`) is hand-written in the lazy-CJS client plugin protocol — no build step, no dependencies.
 
+## Compatibility
+
+The plugin imports no dsh package — it reaches dsh through cordis services — so its dependencies are declared by hand in `peerDependencies`, the only field dsh's compatibility check reads:
+
+| dsh | Status |
+|---|---|
+| 0.1.x | compatible (developed on 0.1.2-alpha.2) |
+| 0.2.x | compatible (verified on 0.2.0-rc.2) |
+| 0.3.0-rc.1 and later | flagged by dsh until re-verified |
+
+After a dsh upgrade, check the 13 runtime contracts against the installed dsh before widening the range:
+
+```sh
+npm run check:dsh
+```
+
 ## Verify
 
 ```sh
